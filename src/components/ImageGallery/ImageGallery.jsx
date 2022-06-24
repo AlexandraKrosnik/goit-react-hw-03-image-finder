@@ -1,15 +1,24 @@
+import PropTypes from 'prop-types';
 import { ImageList } from './ImageGallery.styled';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+
 export const ImageGallery = ({ images }) => {
-  console.log(images);
   return (
     <ImageList>
       {images.map(i => (
-        <ImageGalleryItem
-          key={i.id}
-          webformatURL={i.webformatURL}
-        ></ImageGalleryItem>
+        <ImageGalleryItem key={i.largeImageURL} data={i}></ImageGalleryItem>
       ))}
     </ImageList>
   );
+};
+
+ImageGallery.propTypes = {
+  images: PropTypes.arrayOf.isRequired(
+    PropTypes.shape.isRequired({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    })
+  ),
 };

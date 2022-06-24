@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   Header,
   SearchForm,
@@ -30,12 +31,19 @@ export class Searchbar extends Component {
     });
   };
 
+  submitForm = e => {
+    const { onSubmit } = this.props;
+    e.preventDefault();
+    const value = e.target.query.value.trim();
+    onSubmit(value);
+  };
+
   render() {
     const { value } = this.state;
-    const { onSubmit } = this.props;
+
     return (
       <Header>
-        <SearchForm onSubmit={onSubmit}>
+        <SearchForm onSubmit={this.submitForm}>
           <Button type="submit">
             <SearchSvg />
             <SearchLabel>Search</SearchLabel>
