@@ -18,7 +18,7 @@ export class Modal extends Component {
       this.props.onClose();
     }
   };
-  hiddenScroll = e => {
+  hiddenScroll = () => {
     window.scrollTo(0, 0);
   };
   render() {
