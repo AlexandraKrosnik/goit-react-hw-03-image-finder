@@ -17,93 +17,65 @@ export class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    const { images } = this.state;
+    const { images, page, value } = this.state;
+    if (prevState.page !== page || prevState.value !== value) {
+      this.setState({
+        isLoading: true,
+        loadMore: false,
+      });
+      API.fetchImagesByQuery(value.replace(' ', '+'), page)
+        .then(({ total, images }) => {
+          if (total === 0) {
+            this.setState({
+              error: `По запиту ${value} світлин не знайдено!`,
+              images: [],
+            });
+          } else {
+            this.setState(prevState => ({
+              error: false,
+              loadMore: !!(prevState.images.length + images.length !== total),
+              images: [...prevState.images, ...images],
+            }));
+          }
+        })
+        .catch(error => {
+          if (!error) {
+            this.setState({
+              error: 'Щось пішло не так! Перевірте введені дані.',
+              loadMore: false,
+            });
+          }
+        })
+        .finally(() => {
+          this.setState({
+            isLoading: false,
+          });
+        });
+    }
+
     if (images.length !== prevState.images.length) {
-      this.scrollSmothly();
+      this.scrollSmothly(
+        this.setState({
+          isLoading: false,
+        })
+      );
     }
   }
 
-  takeSearchQuery = async query => {
-    const { page, value } = this.state;
-    if (value === query) {
-      const images = await this.getDataOnRequest(value, page);
-      this.setState(prevState => ({
-        images: [...prevState.images, images],
-      }));
-    }
-    if (value !== query) {
-      const images = await this.getDataOnRequest(query, page);
+  getDataOnRequest = query => {
+    if (query !== this.state.value) {
       this.setState({
         value: query,
-        images: [images],
+        page: 1,
+        images: [],
       });
     }
   };
 
-  getDataOnRequest = async query => {
-    this.setState({
-      error: false,
-      isLoading: true,
-      loadMore: false,
-      page: 1,
-      img: [],
-    });
-    try {
-      const { total, images } = await API.fetchImagesByQuery(
-        query.replace(' ', '+')
-      );
-
-      if (total === 0) {
-        this.setState({
-          error: `По запиту ${query} світлин не знайдено!`,
-          images: [],
-        });
-        return;
-      }
-      this.setState({
-        value: query,
-        images,
-        loadMore: !!(total !== images.length),
-      });
-    } catch (error) {
-      this.setState({
-        error: 'Щось пішло не так! Перевірте введені дані.',
-      });
-    } finally {
-      this.setState(prevState => ({
-        isLoading: false,
-        page: prevState.page + 1,
-      }));
-    }
-  };
-
-  loadMoreImages = async () => {
-    this.setState({
-      error: false,
-      isLoading: true,
-      loadMore: false,
-    });
-    const { page, value } = this.state;
-    try {
-      const { total, images } = await API.fetchImagesByQuery(
-        value.replace(' ', '+'),
-        page
-      );
-
-      this.setState(prevState => ({
-        images: [...prevState.images, ...images],
-        loadMore: !!(prevState.images.length + images.length !== total),
-      }));
-    } catch (error) {
-      this.setState({
-        error: 'Щось пішло не так! Перевірте введені дані.',
-      });
-    } finally {
-      this.setState(prevState => ({
-        isLoading: false,
-        page: prevState.page + 1,
-      }));
-    }
+  loadMoreImages = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   renderBody = () => {

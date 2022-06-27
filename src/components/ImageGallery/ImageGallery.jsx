@@ -13,12 +13,12 @@ export const ImageGallery = ({ images }) => {
 };
 
 ImageGallery.propTypes = {
-  images: PropTypes.arrayOf.isRequired(
-    PropTypes.shape.isRequired({
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
       id: PropTypes.number.isRequired,
       webformatURL: PropTypes.string.isRequired,
       largeImageURL: PropTypes.string.isRequired,
       tags: PropTypes.string.isRequired,
-    })
-  ),
+    }).isRequired
+  ).isRequired,
 };

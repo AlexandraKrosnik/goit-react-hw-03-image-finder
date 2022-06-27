@@ -30,10 +30,10 @@ export class ImageGalleryItem extends Component {
 }
 
 ImageGalleryItem.propTypes = {
-  data: PropTypes.shape.isRequired({
+  data: PropTypes.shape({
     id: PropTypes.number.isRequired,
     webformatURL: PropTypes.string.isRequired,
     largeImageURL: PropTypes.string.isRequired,
     tags: PropTypes.string.isRequired,
-  }),
+  }).isRequired,
 };
